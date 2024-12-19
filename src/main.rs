@@ -54,7 +54,7 @@ fn main() {
             continue;
         };
 
-        match input.trim().as_ref() {
+        match input.trim() {
             "led:off" => {
                 let _ = rgb_led.turn(LedState::Off).unwrap();
             }
