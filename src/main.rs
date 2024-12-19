@@ -99,7 +99,7 @@ fn main() {
             }
 
             _ => {
-                println!("unknown command: {}", input.trim());
+                log::error!("unknown command: {}", input.trim());
                 continue;
             }
         }
@@ -112,7 +112,7 @@ fn readline(input: &mut String) {
             io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => unsafe {
                 vTaskDelay(100)
             },
-            _ => log::error!("Error: {err}\n"),
+            _ => log::error!("err : {err}"),
         }
     }
 }
