@@ -53,40 +53,30 @@ impl CharLCD {
 
 impl lcd::Hardware for CharLCD {
     fn rs(&mut self, state: bool) {
-        let result = self.rs.set_level(state.into());
-
-        if result.is_err() {
-            println!("err:rs.{}: {}", state, result.unwrap_err());
-        }
+        self.rs
+            .set_level(state.into())
+            .unwrap_or_else(|err| println!("err:rs.{}: {}", state, err));
     }
 
     fn enable(&mut self, state: bool) {
-        let result = self.en.set_level(state.into());
-
-        if result.is_err() {
-            println!("err:en.{}: {}", state, result.unwrap_err());
-        }
+        self.en
+            .set_level(state.into())
+            .unwrap_or_else(|err| println!("err:en.{}: {}", state, err));
     }
 
     fn data(&mut self, byte: u8) {
-        let result = esp!(unsafe { gpio_set_level(self.d4.pin(), ((byte >> 0) & 1) as u32) });
-        if result.is_err() {
-            println!("err:d4.{}: {}", (byte >> 0) & 1, result.unwrap_err());
-        }
+        unsafe {
+            esp!(gpio_set_level(self.d4.pin(), (byte & 1) as u32))
+                .unwrap_or_else(|err| println!("err:d4.{}: {}", byte & 1, err));
 
-        let result = esp!(unsafe { gpio_set_level(self.d5.pin(), ((byte >> 1) & 1) as u32) });
-        if result.is_err() {
-            println!("err:d5.{}: {}", (byte >> 1) & 1, result.unwrap_err());
-        }
+            esp!(gpio_set_level(self.d5.pin(), ((byte >> 1) & 1) as u32))
+                .unwrap_or_else(|err| println!("err:d5.{}: {}", (byte >> 1) & 1, err));
 
-        let result = esp!(unsafe { gpio_set_level(self.d6.pin(), ((byte >> 2) & 1) as u32) });
-        if result.is_err() {
-            println!("err:d6.{}: {}", (byte >> 2) & 1, result.unwrap_err());
-        }
+            esp!(gpio_set_level(self.d6.pin(), ((byte >> 2) & 1) as u32))
+                .unwrap_or_else(|err| println!("err:d6.{}: {}", (byte >> 2) & 1, err));
 
-        let result = esp!(unsafe { gpio_set_level(self.d7.pin(), ((byte >> 3) & 1) as u32) });
-        if result.is_err() {
-            println!("err:d7.{}: {}", (byte >> 3) & 1, result.unwrap_err());
+            esp!(gpio_set_level(self.d7.pin(), ((byte >> 3) & 1) as u32))
+                .unwrap_or_else(|err| println!("err:d7.{}: {}", (byte >> 3) & 1, err));
         }
     }
 }

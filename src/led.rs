@@ -26,7 +26,7 @@ pub enum LedState {
 
 unsafe impl EspEventSource for LedState {
     fn source() -> Option<&'static CStr> {
-        Some(unsafe { CStr::from_bytes_with_nul_unchecked(b"C3Test\0") })
+        Some(c"c3Az:led")
     }
 }
 
