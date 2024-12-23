@@ -92,7 +92,7 @@ fn main() {
                     lcd::DisplayBlink::BlinkOff,
                 );
 
-                let data = input.strip_prefix("display:").unwrap().trim();
+                let data = input.strip_prefix("display:").unwrap().trim_matches('\n');
 
                 use std::fmt::Write;
                 write!(&mut display, "{}", data).unwrap();
