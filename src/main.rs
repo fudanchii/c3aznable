@@ -113,7 +113,7 @@ fn main() {
 }
 
 fn readline(input: &mut Vec<u8>) {
-    if let Err(err) = io::stdin().lock().read_until('\n' as u8, input) {
+    if let Err(err) = io::stdin().lock().read_until(b'\n', input) {
         match err.kind() {
             io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => unsafe {
                 vTaskDelay(100)
