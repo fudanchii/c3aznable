@@ -7,6 +7,8 @@ use c3aznable::led::{LedState, RgbLed};
 
 use std::{io, ptr};
 
+use std::io::prelude::*;
+
 fn main() {
     esp_idf_svc::sys::link_patches();
 
@@ -42,7 +44,7 @@ fn main() {
     );
 
     loop {
-        let mut input = String::new();
+        let mut input = Vec::new();
 
         print!("$>: ");
 
@@ -54,7 +56,7 @@ fn main() {
             continue;
         };
 
-        match input.trim() {
+        match String::from_utf8_lossy(&input).as_ref().trim() {
             "led:off" => {
                 let _ = rgb_led.turn(LedState::Off).unwrap();
             }
@@ -85,29 +87,33 @@ fn main() {
                 );
             }
 
-            _ if input.starts_with("display:") => {
+            refstr if refstr.starts_with("display:") => {
                 display.display(
                     lcd::DisplayMode::DisplayOn,
                     lcd::DisplayCursor::CursorOff,
                     lcd::DisplayBlink::BlinkOff,
                 );
 
-                let data = input.strip_prefix("display:").unwrap().trim_matches('\n');
+                let data = &input[8..input.len() - 1];
 
-                use std::fmt::Write;
-                write!(&mut display, "{}", data).unwrap();
+                for c in data {
+                    display.write(*c);
+                }
             }
 
             _ => {
-                log::error!("unknown command: {}", input.trim());
+                log::error!(
+                    "unknown command: {}",
+                    String::from_utf8_lossy(&input).as_ref().trim()
+                );
                 continue;
             }
         }
     }
 }
 
-fn readline(input: &mut String) {
-    if let Err(err) = io::stdin().read_line(input) {
+fn readline(input: &mut Vec<u8>) {
+    if let Err(err) = io::stdin().lock().read_until('\n' as u8, input) {
         match err.kind() {
             io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => unsafe {
                 vTaskDelay(100)
