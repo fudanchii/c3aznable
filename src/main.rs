@@ -1,5 +1,6 @@
-use esp_idf_svc::sys::{esp, esp_vfs_dev_uart_use_driver, uart_driver_install, vTaskDelay};
+use esp_idf_svc::sys::{esp, esp_vfs_dev_uart_use_driver, uart_driver_install};
 
+use esp_idf_svc::hal::delay::Ets;
 use esp_idf_svc::hal::prelude::*;
 
 use c3aznable::char_lcd::{CharLCD, LcdPinMap};
@@ -115,9 +116,9 @@ fn main() {
 fn readline(input: &mut Vec<u8>) {
     if let Err(err) = io::stdin().lock().read_until(b'\n', input) {
         match err.kind() {
-            io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => unsafe {
-                vTaskDelay(100)
-            },
+            io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => {
+                Ets::delay_us(100)
+            }
             _ => log::error!("err : {err}"),
         }
     }
