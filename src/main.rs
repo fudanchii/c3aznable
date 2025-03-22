@@ -102,10 +102,7 @@ fn main() {
                 }
             }
 
-            unknown_cmd => {
-                log::error!("unknown command: {}", unknown_cmd);
-                continue;
-            }
+            unknown_cmd => log::error!("unknown command: {}", unknown_cmd),
         }
     }
 }
