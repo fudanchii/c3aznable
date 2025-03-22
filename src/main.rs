@@ -52,7 +52,7 @@ fn main() {
         use std::io::Write;
         io::stdout().flush().unwrap();
 
-        readline(&mut input);
+        read_line(&mut input);
         if input.is_empty() {
             continue;
         };
@@ -102,18 +102,15 @@ fn main() {
                 }
             }
 
-            _ => {
-                log::error!(
-                    "unknown command: {}",
-                    String::from_utf8_lossy(&input).as_ref().trim()
-                );
+            unknown_cmd => {
+                log::error!("unknown command: {}", unknown_cmd);
                 continue;
             }
         }
     }
 }
 
-fn readline(input: &mut Vec<u8>) {
+fn read_line(input: &mut Vec<u8>) {
     if let Err(err) = io::stdin().lock().read_until(b'\n', input) {
         match err.kind() {
             io::ErrorKind::WouldBlock | io::ErrorKind::TimedOut | io::ErrorKind::Interrupted => {
